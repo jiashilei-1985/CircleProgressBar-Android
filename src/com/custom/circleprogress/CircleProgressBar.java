@@ -76,6 +76,7 @@ public class CircleProgressBar extends View {
         mRingNormalColor = typeArray.getColor(R.styleable.CircleProgressBar_ringNormalColor, Color.GRAY);
         mRingProgressColor = typeArray.getColor(R.styleable.CircleProgressBar_ringProgressColor, Color.YELLOW);
         mMaxProgress = typeArray.getInt(R.styleable.CircleProgressBar_maxProgress, DEFAULT_MAX_PROGRESS);
+        mRingWidth = mProgressBarStyle == STYLE_FILL ? 0 : mRingWidth;
         typeArray.recycle();
         mPaint = new Paint();
     }
@@ -93,24 +94,23 @@ public class CircleProgressBar extends View {
         int center = getWidth() / 2;
         int radius = (int) (center - mRingWidth / 2);
         mPaint.setColor(mRingNormalColor);
-        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setStyle(mProgressBarStyle == STYLE_FILL ? Paint.Style.FILL : Paint.Style.STROKE);
         mPaint.setStrokeWidth(mRingWidth);
         mPaint.setAntiAlias(true);
         canvas.drawCircle(center, center, radius, mPaint);
 
         // 画文字进度，设置到进度圈中间
-        if (!mProgressTextVisibility || mProgress == 0 || mProgressBarStyle == STYLE_FILL) {
+        if (mProgressTextVisibility && mProgress != 0 && mProgressBarStyle != STYLE_FILL) {
             mPaint.setStrokeWidth(0);
             mPaint.setColor(mProgressTextColor);
             mPaint.setTextSize(mProgressTextSize);
             // 设置字体
             mPaint.setTypeface(Typeface.DEFAULT_BOLD);
             // 中间的进度百分比，先转换成float在进行除法运算，不然都为0
-            StringBuilder percentBuilder = new StringBuilder((int) (((float) mProgress / (float) mMaxProgress) * 100));
-            percentBuilder.append("%");
+            int percent = (int) ((mProgress * 1.0 / mMaxProgress) * 100);
             // 测量字体宽度，我们需要根据字体的宽度设置在圆环中间
-            float textWidth = mPaint.measureText(percentBuilder.toString());
-            canvas.drawText(percentBuilder.toString(), center - textWidth / 2, center + textWidth / 2, mPaint);
+            float textWidth = mPaint.measureText(percent + "%");
+            canvas.drawText(percent + "%", center - textWidth / 2, center + mProgressTextSize / 2, mPaint);
         }
 
         // 画圆环进度圈

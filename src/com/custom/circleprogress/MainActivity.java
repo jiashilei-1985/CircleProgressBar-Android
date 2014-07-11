@@ -8,17 +8,19 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
-    CircleProgressBar mCircleProgressBar;
+    CircleProgressBar mCircleProgressBarStroke;
+    CircleProgressBar mCircleProgressBarFill;
     PerformLoadProgress mPerformLoadProgress;
     Handler mLoopHandler = new Handler();
     private int mProgress = 0;
-    private static final int DEFAULT_LOAD_GAP = 8;
+    private static final int DEFAULT_LOAD_GAP = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mCircleProgressBar = (CircleProgressBar) findViewById(R.id.id_circle_progress_bar);
+        mCircleProgressBarStroke = (CircleProgressBar) findViewById(R.id.id_circle_progress_bar_stroke);
+        mCircleProgressBarFill = (CircleProgressBar) findViewById(R.id.id_circle_progress_bar_fill);
         mLoopHandler.postDelayed(new PerformLoadProgress(), 600);
         mPerformLoadProgress = new PerformLoadProgress();
         Toast.makeText(this, "正准备加载...", Toast.LENGTH_SHORT).show();
@@ -36,13 +38,14 @@ public class MainActivity extends Activity {
     private class PerformLoadProgress implements Runnable {
         @Override
         public void run() {
-            if (mProgress > mCircleProgressBar.getMaxProgress()) {
+            if (mProgress > mCircleProgressBarStroke.getMaxProgress()) {
                 mLoopHandler.removeCallbacks(this);
                 return;
             }
             mProgress += DEFAULT_LOAD_GAP;
-            mCircleProgressBar.setProgress(mProgress);
-            mLoopHandler.postDelayed(this, 100);
+            mCircleProgressBarStroke.setProgress(mProgress);
+            mCircleProgressBarFill.setProgress(mProgress);
+            mLoopHandler.postDelayed(this, 2000);
         }
     }
 }
